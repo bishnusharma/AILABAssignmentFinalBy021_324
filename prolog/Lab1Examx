@@ -1,0 +1,235 @@
+ %Gender
+male(john).
+male(david).
+male(peter).
+male(mike).
+male(sam).
+
+female(mary).
+female(lisa).
+female(susan).
+female(anna).
+female(karen).
+
+% Parent-child relationships
+parent(john, david).
+parent(mary, david).
+parent(john, lisa).
+parent(mary, lisa).
+
+parent(david, peter).
+parent(susan, peter).
+parent(david, anna).
+parent(susan, anna).
+
+parent(lisa, mike).
+parent(sam, mike).
+
+parent(lisa, karen).
+parent(sam, karen).
+
+% 1. Father
+father(X, Y) :-
+    male(X),
+    parent(X, Y).
+
+% 2. Mother
+mother(X, Y) :-
+    female(X),
+    parent(X, Y).
+
+% 3. Sibling
+sibling(X, Y) :-
+    parent(Z, X),
+    parent(Z, Y),
+    X \= Y.
+
+% 4. Brother
+brother(X, Y) :-
+    sibling(X, Y),
+    male(X).
+
+% 5. Sister
+sister(X, Y) :-
+    sibling(X, Y),
+    female(X).
+
+% 6. Grandparent
+grandparent(X, Y) :-
+    parent(X, Z),
+    parent(Z, Y).
+
+% 7. Grandfather
+grandfather(X, Y) :-
+    grandparent(X, Y),
+    male(X).
+
+% 8. Grandmother
+grandmother(X, Y) :-
+    grandparent(X, Y),
+    female(X).
+
+% 9. Uncle (brother of a parent)
+uncle(X, Y) :-
+    parent(Z, Y),
+    brother(X, Z).
+
+% 10. Aunt (sister of a parent)
+aunt(X, Y) :-
+    parent(Z, Y),
+    sister(X, Z).
+
+% 11. Cousin
+cousin(X, Y) :-
+    parent(P1, X),
+    parent(P2, Y),
+    sibling(P1, P2).
+
+% 12. Son
+son(X, Y) :-
+    parent(Y, X),
+    male(X).
+
+% 13. Daughter
+daughter(X, Y) :-
+    parent(Y, X),
+    female(X).
+
+% 14. Ancestor (recursive)
+ancestor(X, Y) :-
+    parent(X, Y).
+
+ancestor(X, Y) :-
+    parent(X, Z),
+    ancestor(Z, Y).
+
+
+
+% Directed edges
+edge(a, d).
+edge(a, b).
+edge(e, d).
+edge(d, g).
+edge(b, e).
+edge(b, c).
+edge(c, e).
+edge(c, f).
+edge(e, g).
+edge(e, h).
+edge(e, f).
+edge(g, h).
+edge(f, h).
+% dfs(Start, Goal, Path)
+dfs(Start, Goal, Path) :-
+    dfs_helper(Start, Goal, [Start], RevPath),
+    reverse(RevPath, Path).
+
+dfs_helper(Goal, Goal, Visited, Visited).
+
+dfs_helper(Current, Goal, Visited, Path) :-
+    edge(Current, Next),
+    \+ member(Next, Visited),    % avoid cycles
+    dfs_helper(Next, Goal, [Next | Visited], Path).
+% bfs(Start, Goal, Path)
+bfs(Start, Goal, Path) :-
+    bfs_queue([[Start]], Goal, RevPath),
+    reverse(RevPath, Path).
+
+% If the head of the queue reaches Goal
+bfs_queue([[Goal | Rest] | _], Goal, [Goal | Rest]).
+
+% Otherwise, expand the head and continue
+bfs_queue([CurrentPath | OtherPaths], Goal, Path) :-
+    CurrentPath = [CurrentNode | _],
+    findall([NextNode | CurrentPath],
+            (edge(CurrentNode, NextNode),
+             \+ member(NextNode, CurrentPath)),  % avoid cycles
+            NewPaths),
+    append(OtherPaths, NewPaths, UpdatedQueue),
+    bfs_queue(UpdatedQueue, Goal, Path).
+
+
+
+
+
+%fab series
+fib(0, 0).
+fib(1, 1).
+fib(N, F) :-
+    N > 1,
+    N1 is N - 1, N2 is N - 2,
+    fib(N1, F1),
+    fib(N2, F2),
+    F is F1 + F2.
+fib_series(N, Series) :-
+    findall(F, (between(0, N, X), fib(X, F)), Series).
+even_between(Low, High, Even) :-
+    between(Low, High, Even),
+    0 is Even mod 2.
+
+%prime numbers
+
+is_prime(2).
+is_prime(N) :-
+    N > 2,
+    N mod 2 =\= 0,
+    \+ has_factor(N, 3).
+
+has_factor(N, F) :-
+    N mod F =:= 0.
+has_factor(N, F) :-
+    F * F < N,
+    F2 is F + 2,
+    has_factor(N, F2).
+
+prime_between(Low, High, P) :-
+    between(Low, High, P),
+    is_prime(P).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+table_of_seven :-
+    table_of_seven(1).
+
+table_of_seven(N) :-
+    N =< 10,
+    Result is 7 * N,
+    format('7 x ~d = ~d~n', [N, Result]),
+    N1 is N + 1,
+    table_of_seven(N1).
+
+table_of_seven(N) :-
+    N > 10.
+
+
+%factorial
+% Base case
+factorial(0, 1).
+
+% Recursive case
+factorial(N, F) :-
+    N > 0,
+    N1 is N - 1,
+    factorial(N1, F1),
+    F is N * F1.
+
+
+
+
+
+even_between(Low, High, Even) :-
+    between(Low, High, Even),
+    0 is Even mod 2.

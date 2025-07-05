@@ -167,6 +167,10 @@ even_between(Low, High, Even) :-
     between(Low, High, Even),
     0 is Even mod 2.
 
+
+
+
+
 %prime numbers
 
 is_prime(2).
@@ -203,14 +207,12 @@ prime_between(Low, High, P) :-
 
 table_of_seven :-
     table_of_seven(1).
-
 table_of_seven(N) :-
     N =< 10,
     Result is 7 * N,
     format('7 x ~d = ~d~n', [N, Result]),
     N1 is N + 1,
     table_of_seven(N1).
-
 table_of_seven(N) :-
     N > 10.
 
@@ -233,3 +235,17 @@ factorial(N, F) :-
 even_between(Low, High, Even) :-
     between(Low, High, Even),
     0 is Even mod 2.
+
+
+%alternatively
+even_between(Low, High, Low) :-
+    Low =< High,
+    0 is Low mod 2.
+
+even_between(Low, High, Even) :-
+    Low < High,
+    Next is Low + 1,
+    even_between(Next, High, Even).
+
+
+

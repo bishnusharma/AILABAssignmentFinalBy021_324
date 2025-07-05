@@ -58,3 +58,5 @@ k = 3
 
 prediction = knn_predict(features, labels, query_point, k)
 print("Predicted Label:", prediction)
+
+
